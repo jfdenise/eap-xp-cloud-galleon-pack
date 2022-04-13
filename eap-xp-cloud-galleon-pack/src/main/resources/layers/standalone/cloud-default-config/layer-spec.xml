@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:1.0" name="cloud-default-config">
+    <dependencies>
+        <!-- cloud server like -->
+        <layer name="web-server"/>
+        <layer name="datasources"/>
+        <layer name="management"/>
+        <layer name="jmx-remoting"/> 
+        <layer name="logging"/>
+        <layer name="request-controller"/>
+        <layer name="security-manager"/>
+        <layer name="jaxrs"/>
+        <layer name="bean-validation"/>
+        <layer name="cdi"/>
+        <layer name="ee-security"/>
+        <layer name="jms-activemq"/>
+        <layer name="resource-adapters"/>
+        <!-- end cloud server -->
+        <layer name="core-management"/>
+        <layer name="h2-driver"/>
+        <layer name="microprofile-fault-tolerance"/>
+        <layer name="microprofile-health"/>
+        <layer name="microprofile-jwt"/>
+        <layer name="microprofile-metrics"/>
+        <layer name="microprofile-openapi"/>
+       <!-- <layer name="microprofile-opentracing"/>-->
+        <layer name="microprofile-rest-client"/>
+        <layer name="web-clustering"/>
+        <!-- not yet in XP -->
+        <!--<layer name="elytron-oidc-client"/>-->
+        <!-- because we rely on EAP 7.4.3 -->
+        <layer name="management-security-realm"/>
+        <layer name="application-security-realm"/>
+    </dependencies>
+       
+    <!-- NOT YET AVAILABLE <feature-group name="application-http-basic"/> -->
+    <feature spec="subsystem.elytron.http-authentication-factory">
+        <param name="http-authentication-factory" value="application-http-authentication"/>
+        <param name="http-server-mechanism-factory" value="global"/>
+        <param name="security-domain" value="ApplicationDomain"/>
+        <param name="mechanism-configurations" value="[{mechanism-name=BASIC,mechanism-realm-configurations=[{realm-name=ApplicationRealm}]}]"/>
+    </feature>
+    <!-- Should also be fixed in default layers -->
+    <feature spec="subsystem.undertow">
+        <feature spec="subsystem.undertow.server">
+            <param name="server" value="default-server" />
+            <feature spec="subsystem.undertow.server.host">
+                <param name="host" value="default-host" />
+                <feature spec="subsystem.undertow.server.host.setting.http-invoker">
+                    <unset param="security-realm"/>
+                    <param name="http-authentication-factory" value="application-http-authentication"/>
+                </feature>
+            </feature>
+        </feature>
+    </feature>
+    <!-- add jpa without infinispan cache -->
+    <feature-group name="jpa"/>
+    
+    <!-- inifinispan -->
+    <feature-group name="infinispan-dist-hibernate"/>
+    <feature-group name="os-infinispan-hibernate"/>
+
+    <!-- add applications security domain to undertow -->
+    <feature-group name="undertow-elytron-security"/>
+    
+    <packages>
+        <!-- This config relies on more packages and this allow to provision this layer with all modules -->
+        <package name="modules.all"/>
+    </packages>
+</layer-spec>
