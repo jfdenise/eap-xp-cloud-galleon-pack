@@ -1,4 +1,7 @@
-cloud-fp-common
 config
-ejb-tx-recovery
+finalize-script
 java
+launch-common
+launch-openshift
+layers/base
+layers/clustering
